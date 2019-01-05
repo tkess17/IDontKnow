@@ -1,6 +1,9 @@
 package com.example.tkess.idontknow;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -37,16 +40,20 @@ public class DisplayMessageActivity extends AppCompatActivity {
         int radiusMiles = Integer.parseInt(radius);
         int radiusMeters = radiusMiles * 1609;
         System.out.println("final radius " + radiusMeters);
-        // Capture the layout's TextView and set the string as its text
-        //TextView textView = findViewById(R.id.textView);
-        //textView.setText(message);
+
+        //Coordinate stuff
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+        System.out.println("coords" + longitude);
 
         final TextView mTextView = (TextView) findViewById(R.id.textView);
 // ...
 
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=40.4842,-88.9937&radius="+radiusMeters+"&type=restaurant&key=AIzaSyCwByeJi83SFYSeLrd3CP5CJ_bvCGVaW5Y";
+        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latitude+"+,"+longitude+"&radius="+radiusMeters+"&type=restaurant&key=AIzaSyCwByeJi83SFYSeLrd3CP5CJ_bvCGVaW5Y";
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
