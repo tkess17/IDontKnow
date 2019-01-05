@@ -3,6 +3,7 @@ package com.example.tkess.idontknow;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -29,8 +30,13 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-
+        String radius = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        if(radius.length() == 0) {
+            radius = "1";
+        }
+        int radiusMiles = Integer.parseInt(radius);
+        int radiusMeters = radiusMiles * 1609;
+        System.out.println("final radius " + radiusMeters);
         // Capture the layout's TextView and set the string as its text
         //TextView textView = findViewById(R.id.textView);
         //textView.setText(message);
@@ -40,7 +46,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=40.4842,-88.9937&radius=1500&type=restaurant&key=AIzaSyCwByeJi83SFYSeLrd3CP5CJ_bvCGVaW5Y";
+        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=40.4842,-88.9937&radius="+radiusMeters+"&type=restaurant&key=AIzaSyCwByeJi83SFYSeLrd3CP5CJ_bvCGVaW5Y";
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -58,7 +64,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
                             }
                             Random rand = new Random();
                             String randomRestaurant = restaurants.get(rand.nextInt(restaurants.size()));
-                            mTextView.setText("Random restaurant result " + randomRestaurant);
+                            mTextView.setText(randomRestaurant);
 
                         } catch (JSONException e) {
                             System.out.println("JSONException: " + e);
