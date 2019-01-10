@@ -2,12 +2,15 @@ package com.example.tkess.idontknow;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,6 +29,9 @@ import java.util.Random;
 
 public class DisplayMessageActivity extends AppCompatActivity {
 
+    public double latitude;
+    public double longitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +47,28 @@ public class DisplayMessageActivity extends AppCompatActivity {
         int radiusMeters = radiusMiles * 1609;
         System.out.println("final radius " + radiusMeters);
 
+
+
         //Coordinate stuff
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
-        System.out.println("coords" + longitude);
+//        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+//        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//        double longitude = location.getLongitude();
+//        double latitude = location.getLatitude();
+//        System.out.println("coords" + longitude);
+
+        LocationManager locationManager = (LocationManager)  this.getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
+
+        //You can still do this if you like, you might get lucky:
+        Location location = locationManager.getLastKnownLocation(bestProvider);
+        if (location != null) {
+            Log.e("TAG", "GPS is on");
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            Toast.makeText(DisplayMessageActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+            //searchNearestPlace(voice2text);
+        }
 
         final TextView mTextView = (TextView) findViewById(R.id.textView);
 // ...
@@ -69,6 +91,8 @@ public class DisplayMessageActivity extends AppCompatActivity {
                                 JSONObject single = results.getJSONObject(i);
                                 restaurants.add(single.getString("name"));
                             }
+                            System.out.println(restaurants.toString());
+                            System.out.println(restaurants.size());
                             Random rand = new Random();
                             String randomRestaurant = restaurants.get(rand.nextInt(restaurants.size()));
                             mTextView.setText(randomRestaurant);
